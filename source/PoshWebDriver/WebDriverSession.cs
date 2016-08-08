@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -31,6 +32,28 @@ namespace PoshWebDriver
         {
             BrowserUrl = browserUrl.Trim('/', '\\');
             Http = new HttpClient();
+        }
+
+        public async Task<string> FindElement(string element, string locatorStrategy = "css selector")
+        {
+            var url = BrowserUrl + "/session/" + SessionId + "/element";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Content = new StringContent("{\"using\":\"" + locatorStrategy + "\", \"value\":\"" + element + "\"}");
+
+            var response = await Http.SendAsync(request);
+            var r = await response.Content.ReadAsAsync<ElementResponse>();
+            return r.value.Element;
+        }
+
+        public async Task SendKeys(string elementId, object[] keys)
+        {
+            var url = BrowserUrl + "/session/" + SessionId + "/element/" + elementId + "/value";
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            request.Content = new StringContent("{\"value\":" + JsonConvert.SerializeObject(keys) + "}");
+
+            await Http.SendAsync(request);
         }
 
         private async Task NewSession()
@@ -83,6 +106,14 @@ namespace PoshWebDriver
                 var buffer = Convert.FromBase64String(value);
                 return new MemoryStream(buffer);
             }
+        }
+
+        public class ElementResponse {
+            public ElementValue value { get; set; }
+        }
+
+        public class ElementValue {
+            public string Element { get; set; }
         }
     }
 

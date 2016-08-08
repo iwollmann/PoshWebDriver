@@ -74,6 +74,7 @@
   <ItemGroup>
     <Compile Include="Commands\GetWebDriverSessionScreenshot.cs" />
     <Compile Include="Commands\NewWebDriverSession.cs" />
+    <Compile Include="Commands\SetWebDriverSessionSendKeys.cs" />
     <Compile Include="Commands\SetWebDriverSessionUrl.cs" />
     <Compile Include="Commands\ShowImage.cs" />
     <Compile Include="Helpers\AsyncHelpers.cs" />
